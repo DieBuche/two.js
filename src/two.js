@@ -392,7 +392,7 @@
               break;
             case 'fill':
             case 'stroke':
-              elem[property] = (value == 'none') ? 'transparent' : value;
+              elem[key] = (value == 'none') ? 'transparent' : value;
               break;
             case 'id':
               elem.id = value;
