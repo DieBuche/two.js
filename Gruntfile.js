@@ -6,7 +6,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     meta: {
-      
+
       licenseFile : 'license.txt',
 
       depFiles : [
@@ -71,6 +71,13 @@ module.exports = function(grunt) {
           port: 3000
         }
       }
+    },
+
+    uglify: {
+       release: {
+         src: ['build/two.js'],
+        dest: 'build/two.min.js'
+       }
     },
 
     closureCompiler:  {
