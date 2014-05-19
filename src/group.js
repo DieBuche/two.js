@@ -53,6 +53,10 @@
         },
         set: function(v) {
           this[secret] = v;
+
+          if (k == 'opacity') {
+            this['_flag' + k] = true;
+          }
           // Is this really necessary?
           // Imagine a group with opacity 0.5 and a few children.
           // Setting the childrens opacity to 0.5 as well will changes the appearance.
@@ -73,6 +77,7 @@
 
     _flagAdditions: false,
     _flagSubtractions: false,
+    _flagOpacity: false,
 
     // Underlying Properties
 

@@ -220,6 +220,10 @@
           _.each(this.subtractions, svg.group.removeChild, context);
         }
 
+        if (this._flagOpacity) {
+          elem.setAttribute('opacity', this._opacity);
+        }
+
         return this.flagReset();
 
       }
