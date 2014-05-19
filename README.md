@@ -51,8 +51,12 @@ Finally, build the project:
 grunt
 ```
 
-If you are having problems running the closure compiler (it requires a JDK to be installed), replace 'closureCompiler' with 'uglify' in the task list on the last line of ./Gruntfile.js
+If you are having problems running the closure compiler (it requires a JDK to be installed), run
 
+```
+grunt build-uglify
+```
+instead to minify the build with uglify.
 
 ## Change Log
 

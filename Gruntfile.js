@@ -114,4 +114,6 @@ module.exports = function(grunt) {
   // Default task
   grunt.registerTask('default', ['jshint' , 'concat', 'closureCompiler']);
 
+  // Uglify fallback
+  grunt.registerTask('build-uglify', ['jshint' , 'concat', 'uglify']);
 };
