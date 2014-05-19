@@ -221,8 +221,8 @@
           } else if (node.children[id] instanceof Two.Group) {
             search(node.children[id], type);
           }
-          return found;
         }
+        return found;
       };
       return search(this, type);
     },
