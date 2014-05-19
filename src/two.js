@@ -411,6 +411,8 @@
                 elem.classList.push(cl);
               });
               break;
+            case 'display':
+              if (value == 'none') elem.visible = false;
           }
         });
 
