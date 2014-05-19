@@ -217,7 +217,7 @@
       var search = function (node, type) {
         for (var id in node.children) {
           if (node.children[id] instanceof type) {
-            result.push(node.children[id]);
+            found.push(node.children[id]);
           } else if (node.children[id] instanceof Two.Group) {
             search(node.children[id], type);
           }
