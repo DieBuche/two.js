@@ -348,8 +348,8 @@
         // support opacity as an attribute, but you can apply it via CSS.
         // So we take the opacity and set (stroke/fill)-opacity to the same value.
         if (styles.opacity != undefined) {
-          styles[stroke-opacity] = styles.opacity;
-          styles[fill-opacity] = styles.opacity;
+          styles['stroke-opacity'] = styles.opacity;
+          styles['fill-opacity'] = styles.opacity;
         }
 
         // Convert NodeMap to a normal object
@@ -408,12 +408,6 @@
             case 'class':
               if (!elem.classList) elem.classList = [];
               value.split(' ').forEach(function (cl) {
-                elem.classList.push(cl);
-              });
-              break;
-            case 'class':
-              if (!elem.classList) elem.classList = [];
-              v.nodeValue.split(' ').forEach(function (cl) {
                 elem.classList.push(cl);
               });
               break;
