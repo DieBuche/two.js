@@ -344,6 +344,14 @@
           });
         }
 
+        // Getting the correct opacity is a bit tricky, since SVG path elements don't
+        // support opacity as an attribute, but you can apply it via CSS.
+        // So we take the opacity and set (stroke/fill)-opacity to the same value.
+        if (styles.opacity != undefined) {
+          styles[stroke-opacity] = styles.opacity;
+          styles[fill-opacity] = styles.opacity;
+        }
+
         // Convert NodeMap to a normal object
         _.each(node.attributes, function(v, k) {
           attributes[v.nodeName] = v.nodeValue;
