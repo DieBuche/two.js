@@ -29,7 +29,7 @@
         ctx.transform(
           matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
 
-        _.each(this.children, canvas.group.renderChild, ctx);
+        this.children.forEach(canvas.group.renderChild, ctx);
 
         ctx.restore();
 
