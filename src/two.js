@@ -1570,11 +1570,11 @@
     requestAnimationFrame(arguments.callee);
 
     Two.Instances.forEach(function(t) {
-
+      if (typeof stats != 'undefined') stats.begin();
       if (t.playing) {
         t.update();
       }
-
+      if (typeof stats != 'undefined') stats.end();
     });
 
   })();
