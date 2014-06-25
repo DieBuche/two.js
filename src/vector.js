@@ -274,7 +274,7 @@
     },
     set: function(v) {
       this._x = v;
-      this.trigger(Two.Events.change, 'x');
+      this.trigger(Two.Events.change, ['x']);
     }
   };
 
@@ -284,7 +284,7 @@
     },
     set: function(v) {
       this._y = v;
-      this.trigger(Two.Events.change, 'y');
+      this.trigger(Two.Events.change, ['y']);
     }
   };
 

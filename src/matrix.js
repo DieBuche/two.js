@@ -29,7 +29,6 @@
     }
 
     // initialize the elements with default values.
-
     this.identity().set(elements);
 
   };
@@ -103,7 +102,7 @@
 
       var elements = a;
       if (!_.isArray(elements)) {
-        elements = _.toArray(arguments);
+        elements = arguments;
       }
 
       _.extend(this.elements, elements);
@@ -117,9 +116,9 @@
      */
     identity: function() {
 
-      this.set(Matrix.Identity);
+      this.elements = Matrix.Identity.slice();
 
-      return this;
+      return this.trigger(Two.Events.change);
 
     },
 

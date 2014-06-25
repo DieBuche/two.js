@@ -11,12 +11,12 @@ module.exports = function(grunt) {
 
       depFiles : [
         'node_modules/underscore/underscore.js',
-        'third-party/events.js',
         'third-party/requestAnimationFrame.js'
       ],
 
       srcFiles : [
         'src/two.js',
+        'src/events.js',
         'src/vector.js',
         'src/anchor.js',
         'src/matrix.js',
