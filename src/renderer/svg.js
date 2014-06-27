@@ -165,17 +165,15 @@
 
     group: {
 
-      // TODO: Can speed up.
-      appendChild: function(id) {
-        var elem = this.domElement.querySelector('#' + id);
+      appendChild: function(object) {
+        var elem = object._renderer.elem;
         if (elem) {
           this.elem.appendChild(elem);
         }
       },
 
-      // TODO: Can speed up.
-      removeChild: function(id) {
-        var elem = this.elem.querySelector('#' + id);
+      removeChild: function(object) {
+        var elem = object._renderer.elem;
         if (elem) {
           this.elem.removeChild(elem);
         }
@@ -217,11 +215,11 @@
         }
 
         if (this._flagAdditions) {
-          _.each(this.additions, svg.group.appendChild, context);
+          this.additions.forEach(svg.group.appendChild, context);
         }
 
         if (this._flagSubtractions) {
-          _.each(this.subtractions, svg.group.removeChild, context);
+          this.subtractions.forEach(svg.group.removeChild, context);
         }
 
         return this.flagReset();

@@ -96,12 +96,12 @@
             delete this.parent;
           }
 
-          index = oldParent.additions.indexOf(id);
+          index = oldParent.additions.indexOf(this);
           if (index >= 0) {
             oldParent.additions.splice(index, 1);
           }
 
-          oldParent.subtractions.push(id);
+          oldParent.subtractions.push(this);
           oldParent._flagSubtractions = true;
         }
 
@@ -109,7 +109,7 @@
         if (newParent) {
           newParent.children.push(this);
           this.parent = newParent;
-          newParent.additions.push(id);
+          newParent.additions.push(this);
           newParent._flagAdditions = true;
         }
 
