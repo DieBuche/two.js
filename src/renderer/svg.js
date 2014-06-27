@@ -174,7 +174,7 @@
 
       removeChild: function(object) {
         var elem = object._renderer.elem;
-        if (elem) {
+        if (elem && elem.parentElement == this.elem) {
           this.elem.removeChild(elem);
         }
       },

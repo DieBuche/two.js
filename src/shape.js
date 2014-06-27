@@ -100,13 +100,10 @@
 
           // If it's in additions it has just been added
           // and not processed it.
-          // If not add it to substractions, but only if
-          // it's not already being added somewhere else.
-          // This prevents an error at the SVG renderer,
-          // but should ideally be handled there.
+          // If not add it to substractions.
           if (index >= 0) {
             oldParent.additions.splice(index, 1);
-          } else if (!newParent) {
+          } else {
             oldParent.subtractions.push(this);
             oldParent._flagSubtractions = true;
           }
