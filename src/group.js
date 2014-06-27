@@ -294,6 +294,7 @@
 
       // Add the objects
       for (var i = 0; i < objects.length; i++) {
+        if (!objects[i]) continue;
         objects[i].replaceParent(this);
       }
 
@@ -329,6 +330,7 @@
 
       // Remove the objects
       for (var i = 0; i < objects.length; i++) {
+        if (!objects[i]) continue;
         objects[i].replaceParent();
       }
 
