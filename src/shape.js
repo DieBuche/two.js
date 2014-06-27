@@ -97,12 +97,19 @@
           }
 
           index = oldParent.additions.indexOf(this);
+
+          // If it's in additions it has just been added
+          // and not processed it.
+          // If not add it to substractions, but only if
+          // it's not already being added somewhere else.
+          // This prevents an error at the SVG renderer,
+          // but should ideally be handled there.
           if (index >= 0) {
             oldParent.additions.splice(index, 1);
+          } else if (!newParent) {
+            oldParent.subtractions.push(this);
+            oldParent._flagSubtractions = true;
           }
-
-          oldParent.subtractions.push(this);
-          oldParent._flagSubtractions = true;
         }
 
         // If newParent is specified, add this to the group
