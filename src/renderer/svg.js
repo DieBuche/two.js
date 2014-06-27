@@ -187,6 +187,13 @@
 
         this._update();
 
+        // Shortcut for hidden objects.
+        // Doesn't reset the flags, so changes are stored and
+        // applied once the object is visible again
+        if (this._opacity === 0 && !this._flagOpacity) {
+          return this;
+        }
+
         if (!this._renderer.elem) {
           this._renderer.elem = svg.createElement('g', {
             id: this.id
@@ -233,6 +240,13 @@
       render: function(domElement) {
 
         this._update();
+
+        // Shortcut for hidden objects.
+        // Doesn't reset the flags, so changes are stored and
+        // applied once the object is visible again
+        if (this._opacity === 0 && !this._flagOpacity) {
+          return this;
+        }
 
         // Collect any attribute that needs to be changed here
         var changed = {};
