@@ -33,7 +33,7 @@
 
     hasEventListeners: _.isFunction(root.addEventListener),
 
-    bind: function(elem, event, func, bool) {
+    on: function(elem, event, func, bool) {
       if (this.hasEventListeners) {
         elem.addEventListener(event, func, !!bool);
       } else {
@@ -42,7 +42,7 @@
       return this;
     },
 
-    unbind: function(elem, event, func, bool) {
+    off: function(elem, event, func, bool) {
       if (this.hasEventListeners) {
         elem.removeEventListeners(event, func, !!bool);
       } else {
@@ -86,7 +86,7 @@
 
     if (params.fullscreen) {
 
-      var fitted = _.bind(fitToWindow, this);
+      var fitted = fitToWindow.bind(this);
       _.extend(document.body.style, {
         overflow: 'hidden',
         margin: 0,
@@ -105,7 +105,7 @@
         bottom: 0,
         position: 'fixed'
       });
-      dom.bind(root, 'resize', fitted);
+      dom.on(root, 'resize', fitted);
       fitted();
 
 
@@ -191,17 +191,17 @@
           return;
         }
 
-        if (_.isFunction(obj.unbind)) {
-          obj.unbind();
+        if (_.isFunction(obj.off)) {
+          obj.off();
         }
 
         if (obj.vertices) {
-          if (_.isFunction(obj.vertices.unbind)) {
-            obj.vertices.unbind();
+          if (_.isFunction(obj.vertices.off)) {
+            obj.vertices.off();
           }
           _.each(obj.vertices, function(v) {
-            if (_.isFunction(v.unbind)) {
-              v.unbind();
+            if (_.isFunction(v.off)) {
+              v.off();
             }
           });
         }
@@ -1310,7 +1310,7 @@
         renderer.setSize(width, height, this.ratio);
       }
 
-      this.trigger(Two.Events.update, this.frameCount, this.timeDelta);
+      this.trigger(Two.Events.update, [this.frameCount, this.timeDelta]);
 
       return this.render();
 

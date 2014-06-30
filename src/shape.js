@@ -14,7 +14,7 @@
     this._matrix = new Two.Matrix();
 
     this.translation = new Two.Vector();
-    this.translation.bind(Two.Events.change, _.bind(Shape.FlagMatrix, this));
+    this.translation.on(Two.Events.change, Shape.FlagMatrix.bind(this));
     this.rotation = 0;
     this.scale = 1;
 
