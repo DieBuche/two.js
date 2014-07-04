@@ -514,6 +514,17 @@
 
         },
 
+        text: function(node) {
+          var group = new Two.Group();
+
+          // Switched up order to inherit more specific styles
+          Two.Utils.applySvgAttributes(node, group);
+
+          group._renderer.elem = node.cloneNode(true);
+
+          return group;
+        },
+
         polygon: function(node, open) {
 
           var points = node.getAttribute('points');
