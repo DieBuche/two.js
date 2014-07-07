@@ -1,4 +1,5 @@
 (function() {
+  "use strict";
 
   var root = window || global;
   var previousTwo = root.Two || {};
@@ -85,8 +86,7 @@
     this.frameCount = 0;
 
     if (params.fullscreen) {
-
-      var fitted = fitToWindow.bind(this);
+      var that = this;
       _.extend(document.body.style, {
         overflow: 'hidden',
         margin: 0,
@@ -105,8 +105,10 @@
         bottom: 0,
         position: 'fixed'
       });
-      dom.on(root, 'resize', fitted);
-      fitted();
+      dom.on(root, 'resize', function () {
+        fitToWindow(that);
+      });
+      fitToWindow(that);
 
 
     } else if (!_.isElement(params.domElement)) {
@@ -1557,15 +1559,15 @@
 
   });
 
-  function fitToWindow() {
+  function fitToWindow(that) {
 
     var wr = document.body.getBoundingClientRect();
 
-    var width = this.width = wr.width;
-    var height = this.height = wr.height;
+    var width = that.width = wr.width;
+    var height = that.height = wr.height;
 
-    this.renderer.setSize(width, height, this.ratio);
-    this.trigger(Two.Events.resize, width, height);
+    that.renderer.setSize(width, height, that.ratio);
+    that.trigger(Two.Events.resize, width, height);
 
   }
 
