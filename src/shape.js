@@ -1,4 +1,5 @@
 (function(Two) {
+  "use strict";
 
   var Shape = Two.Shape = function() {
 

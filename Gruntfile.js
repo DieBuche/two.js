@@ -42,7 +42,7 @@ module.exports = function(grunt) {
         undef: true,
         browser: true,
         '-W009': true,
-        predef: [ "_", "Backbone", "Two", "requestAnimationFrame", "module", "define"]
+        predef: [ "_", "Backbone", "Two", "requestAnimationFrame", "module", "define", "global"]
       },
       all: ['Gruntfile.js', 'src/**/*.js']
     },

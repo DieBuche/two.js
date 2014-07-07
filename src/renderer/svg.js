@@ -1,4 +1,5 @@
 (function(Two) {
+  "use strict";
 
   // Localize variables
   var mod = Two.Utils.mod, toFixed = Two.Utils.toFixed;

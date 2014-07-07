@@ -1,6 +1,6 @@
 (function() {
 
-  var root = this;
+  var root = window || global;
   var previousTwo = root.Two || {};
 
   /**
@@ -1576,10 +1576,7 @@
 
   // Request Animation Frame
 
-  (function() {
-
-    requestAnimationFrame(arguments.callee);
-
+  (function renderLoop() {
     Two.Instances.forEach(function(t) {
       if (typeof stats != 'undefined') stats.begin();
       if (t.playing) {
@@ -1588,6 +1585,7 @@
       if (typeof stats != 'undefined') stats.end();
     });
 
+    requestAnimationFrame(renderLoop);
   })();
 
   //exports to multiple environments

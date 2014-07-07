@@ -1,4 +1,5 @@
 (function(Two) {
+  "use strict";
 
   /**
    * Constants
