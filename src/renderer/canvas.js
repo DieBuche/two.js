@@ -7,6 +7,18 @@
   var mod = Two.Utils.mod, toFixed = Two.Utils.toFixed;
   var getRatio = Two.Utils.getRatio;
 
+  // Returns true if the given rect intersects the viewport
+  // FIXME: Hardcoded width/height
+  var intersectsViewport = function (rect) {
+    if ((rect.left > 768) || ((rect.left + rect.width) < 0)) {
+        return false;
+    }
+    if ((rect.top > (1024)) || ((rect.top + rect.height) < 0)) {
+        return false;
+    }
+    return true;
+  };
+
   // Returns true if this is a non-transforming matrix
   var isDefaultMatrix = function (m) {
     return (m[0] == 1 && m[3] == 0 && m[1] == 0 && m[4] == 1 && m[2] == 0 && m[5] == 0);
@@ -21,15 +33,79 @@
       },
 
       render: function(ctx) {
+        var can, oldCtx, creatingCache, i, child, rect, defaultMatrix, matrix, parent, opacity;
 
         // TODO: Add a check here to only invoke _update if need be.
         this._update();
 
-        var matrix = this._matrix.elements;
-        var parent = this.parent;
-        this._renderer.opacity = this._opacity * (parent && parent._renderer ? parent._renderer.opacity : 1);
+        matrix = this._matrix.elements;
+        parent = this.parent;
 
-        var defaultMatrix = isDefaultMatrix(matrix);
+        // Shortcut for hidden objects.
+        // Doesn't reset the flags, so changes are stored and
+        // applied once the object is visible again
+        if (this._opacity === 0 && !this._flagOpacity) {
+          return this;
+        }
+
+        // Invalidate cache on scale changes or when children have been modified or addded.
+        // TODO: The children flag is not yet set automatically.
+        if (this.cachedBitmap && (this._flagChildren || this._flagScale || this._flagAdditions)) {
+            this.cachedBitmap = null;
+            this._flagChildren = false;
+        }
+
+        // Create an offscreen canvas on which to render this group
+        if (this.cacheEnabled && !this.cachedBitmap) {
+          // Pixel ratio (Retina devices)
+          var ratio = Two.Instances[0].renderer.ratio;
+          var isOne = ratio === 1;
+
+          // Set flag
+          creatingCache = true;
+          oldCtx = ctx;
+          can = document.createElement('canvas');
+
+          this.cachedRect = rect = this.getBoundingClientRect(true);
+          this.cachedBitmap = can;
+
+          if (this.cacheViewport) {
+            rect.left = Math.max(0, rect.left);
+            rect.top = Math.max(0, rect.top);
+
+            this.cachedRect = rect = {
+              left: rect.left ,
+              top: rect.top,
+              height: 1024 - rect.top,
+              width: 768 - rect.left
+            };
+          }
+
+          can.width = Math.max(1, Math.ceil(rect.width)) * ratio;
+          can.height = Math.max(1, Math.ceil(rect.height)) * ratio;
+
+          ctx = can.getContext('2d');
+
+          if (!isOne) {
+            ctx.scale(ratio, ratio);
+          }
+
+          ctx.translate(-rect.left, -rect.top);
+
+        } else if (this.cacheEnabled && this.cachedBitmap) {
+          return canvas.group.renderCached.call(this, ctx);
+        }
+
+        // Render out the group elements on the current context
+        defaultMatrix = isDefaultMatrix(matrix);
+
+        if (creatingCache) {
+          opacity = 1;
+        } else {
+          opacity = this._opacity * (parent && parent._renderer ? parent._renderer.opacity : 1);
+        }
+
+        this._renderer.opacity = opacity;
 
         var mask = this._mask;
         // var clip = this._clip;
@@ -41,7 +117,7 @@
         this._renderer.context.ctx = ctx;
         // this._renderer.context.clip = clip;
 
-        if (!defaultMatrix) {
+        if (!defaultMatrix && !creatingCache) {
           ctx.save();
           ctx.transform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
         }
@@ -50,16 +126,16 @@
           canvas[mask._renderer.type].render.call(mask, ctx, true);
         }
 
-        for (var i = 0; i < this.children.length; i++) {
-          var child = this.children[i];
+        for (i = 0; i < this.children.length; i++) {
+          child = this.children[i];
           canvas[child._renderer.type].render.call(child, ctx);
         }
 
-        if (!defaultMatrix) {
+        if (!defaultMatrix && !creatingCache) {
           ctx.restore();
         }
 
-       /**
+         /**
          * Commented two-way functionality of clips / masks with groups and
          * polygons. Uncomment when this bug is fixed:
          * https://code.google.com/p/chromium/issues/detail?id=370951
@@ -69,8 +145,37 @@
         //   ctx.clip();
         // }
 
-        return this.flagReset();
+        if (creatingCache) {
+          return canvas.group.renderCached.call(this, oldCtx);
+        } else {
+          return this.flagReset();
+        }
 
+      },
+
+      renderCached: function (ctx) {
+        var ratio = Two.Instances[0].renderer.ratio;
+        var isOne = ratio === 1;
+        var matrix = this._matrix.elements;
+        var parent = this.parent;
+
+        var r = {
+          left: this.cachedRect.left + matrix[2],
+          top:  this.cachedRect.top + matrix[5],
+          width: this.cachedRect.width,
+          height: this.cachedRect.height
+        };
+
+        if (!intersectsViewport(r)) {
+          return;
+        }
+
+
+        ctx.globalAlpha = this._opacity * (parent && parent._renderer ? parent._renderer.opacity : 1);
+
+        ctx.drawImage(this.cachedBitmap, 0, 0, r.width * ratio, r.height * ratio, r.left, r.top, r.width, r.height);
+
+        return this.flagReset();
       }
 
     },
@@ -81,10 +186,28 @@
 
         var matrix, stroke, linewidth, fill, opacity, visible, cap, join, miter,
             closed, commands, length, last, next, prev, a, c, d, ux, uy, vx, vy,
-            ar, bl, br, cl, x, y, mask, clip, defaultMatrix;
+            ar, bl, br, cl, x, y, mask, clip, defaultMatrix, creatingCache = false, oldCtx, can, b;
 
         // TODO: Add a check here to only invoke _update if need be.
         this._update();
+
+        // Invalidate cache
+        // if (this.cachedBitmap && this._flagVertices) {
+        //   this.cachedBitmap = null;
+        // }
+
+        // if (this.cacheEnabled && !this.cachedBitmap) {
+        //   // Set flag
+        //   creatingCache = true;
+        //
+        //   oldCtx = ctx;
+        //
+        //   can = document.createElement('canvas');
+        //   ctx = can.getContext('2d');
+        //
+        // } else if (this.cacheEnabled && this.cachedBitmap) {
+        //   return canvas.polygon.renderCached.call(this, ctx);
+        // }
 
         matrix = this._matrix.elements;
         stroke = this._stroke;
@@ -104,12 +227,12 @@
         // mask = this._mask;
         clip = this._clip;
 
-        if (!forced && (!visible || clip)) {
+        if (!forced && (!visible || !opacity || clip)) {
           return this;
         }
 
         // Transform
-        if (!defaultMatrix) {
+        if (!defaultMatrix && !creatingCache) {
           ctx.save();
           ctx.transform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
         }
@@ -143,7 +266,7 @@
         if (cap) {
           ctx.lineCap = cap;
         }
-        if (_.isNumber(opacity)) {
+        if (_.isNumber(opacity) && !creatingCache) {
           ctx.globalAlpha = opacity;
         }
 
@@ -252,8 +375,37 @@
           ctx.clip();
         }
 
+        if (creatingCache) {
+          this.cachedBitmap = can;
+          return canvas.polygon.renderCached.call(this, oldCtx);
+        }
+
         return this.flagReset();
 
+      },
+
+      renderCached: function (ctx) {
+        var matrix = this._matrix.elements;
+        var opacity = this._opacity * this.parent._renderer.opacity;
+
+
+
+        if (matrix) {
+          ctx.save();
+          ctx.transform(
+            matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
+        }
+        if (_.isNumber(opacity)) {
+          ctx.globalAlpha = opacity;
+        }
+
+        ctx.drawImage(this.cachedBitmap, 0, 0);
+
+        if (matrix) {
+          ctx.restore();
+        }
+
+        return this.flagReset();
       }
 
     }
