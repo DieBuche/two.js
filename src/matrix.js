@@ -92,7 +92,7 @@
 
   });
 
-  _.extend(Matrix.prototype, Backbone.Events, {
+  _.extend(Matrix.prototype, Two.Event, {
 
     /**
      * Takes an array of elements or the arguments list itself to

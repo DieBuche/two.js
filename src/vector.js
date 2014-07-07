@@ -14,7 +14,7 @@
 
   });
 
-  _.extend(Vector.prototype, Backbone.Events, {
+  _.extend(Vector.prototype, Two.Event, {
 
     set: function(x, y) {
       this.x = x;
@@ -306,7 +306,7 @@
       this._bound = true; // Reserved for event initialization check
     }
 
-    Backbone.Events.bind.apply(this, arguments);
+    Two.Event.bind.apply(this, arguments);
 
     return this;
 

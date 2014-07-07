@@ -16,7 +16,6 @@ module.exports = function(grunt) {
 
       srcFiles : [
         'src/two.js',
-        'src/events.js',
         'src/vector.js',
         'src/anchor.js',
         'src/matrix.js',
@@ -42,7 +41,7 @@ module.exports = function(grunt) {
         undef: true,
         browser: true,
         '-W009': true,
-        predef: [ "_", "Backbone", "Two", "requestAnimationFrame", "module", "define", "global"]
+        predef: [ "_", "Two", "requestAnimationFrame", "module", "define", "global"]
       },
       all: ['Gruntfile.js', 'src/**/*.js']
     },

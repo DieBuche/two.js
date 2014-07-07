@@ -21,7 +21,7 @@
 
   };
 
-  _.extend(Shape, Backbone.Events, {
+  _.extend(Shape, Two.Event, {
 
     FlagMatrix: function() {
       this._flagMatrix = true;
