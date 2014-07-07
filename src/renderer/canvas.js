@@ -21,7 +21,7 @@
 
   // Returns true if this is a non-transforming matrix
   var isDefaultMatrix = function (m) {
-    return (m[0] == 1 && m[3] == 0 && m[1] == 0 && m[4] == 1 && m[2] == 0 && m[5] == 0);
+    return (m[0] == 1 && m[3] === 0 && m[1] === 0 && m[4] == 1 && m[2] === 0 && m[5] === 0);
   };
 
   var canvas = {
