@@ -6,6 +6,18 @@
   var mod = Two.Utils.mod, toFixed = Two.Utils.toFixed;
   var getRatio = Two.Utils.getRatio;
 
+  // Returns true if the given rect intersects the viewport
+  // FIXME: Hardcoded width/height
+  var intersectsViewport = function (rect) {
+    if ((rect.left > 768) || ((rect.left + rect.width) < 0)) {
+        return false;
+    }
+    if ((rect.top > (1024)) || ((rect.top + rect.height) < 0)) {
+        return false;
+    }
+    return true;
+  };
+
   // Returns true if this is a non-transforming matrix
   var isDefaultMatrix = function (m) {
     return (m[0] == 1 && m[3] == 0 && m[1] == 0 && m[4] == 1 && m[2] == 0 && m[5] == 0);
@@ -20,34 +32,128 @@
       },
 
       render: function(ctx) {
+        var can, oldCtx, creatingCache, i, child, rect, defaultMatrix, matrix, parent, opacity;
 
         // TODO: Add a check here to only invoke _update if need be.
         this._update();
 
-        var matrix = this._matrix.elements;
-        var parent = this.parent;
+        matrix = this._matrix.elements;
+        parent = this.parent;
 
-        var defaultMatrix = isDefaultMatrix(matrix);
+        // Shortcut for hidden objects.
+        // Doesn't reset the flags, so changes are stored and
+        // applied once the object is visible again
+        if (this._opacity === 0 && !this._flagOpacity) {
+          return this;
+        }
 
-        this._renderer.opacity = this._opacity * (parent && parent._renderer ? parent._renderer.opacity : 1);
+        // Invalidate cache on scale changes or when children have been modified or addded.
+        // TODO: The children flag is not yet set automatically.
+        if (this.cachedBitmap && (this._flagChildren || this._flagScale || this._flagAdditions)) {
+            this.cachedBitmap = null;
+            this._flagChildren = false;
+        }
 
-        if (!defaultMatrix) {
+        // Create an offscreen canvas on which to render this group
+        if (this.cacheEnabled && !this.cachedBitmap) {
+          // Pixel ratio (Retina devices)
+          var ratio = Two.Instances[0].renderer.ratio;
+          var isOne = ratio === 1;
+
+          // Set flag
+          creatingCache = true;
+          oldCtx = ctx;
+          can = document.createElement('canvas');
+
+          this.cachedRect = rect = this.getBoundingClientRect(true);
+          this.cachedBitmap = can;
+
+          if (this.cacheViewport) {
+            rect.left = Math.max(0, rect.left);
+            rect.top = Math.max(0, rect.top);
+
+            this.cachedRect = rect = {
+              left: rect.left ,
+              top: rect.top,
+              height: 1024 - rect.top,
+              width: 768 - rect.left
+            };
+          }
+
+          can.width = Math.max(1, Math.ceil(rect.width)) * ratio;
+          can.height = Math.max(1, Math.ceil(rect.height)) * ratio;
+
+          ctx = can.getContext('2d');
+
+          if (!isOne) {
+            ctx.scale(ratio, ratio);
+          }
+
+          ctx.translate(-rect.left, -rect.top);
+
+        } else if (this.cacheEnabled && this.cachedBitmap) {
+          return canvas.group.renderCached.call(this, ctx);
+        }
+
+        // Render out the group elements on the current context
+        defaultMatrix = isDefaultMatrix(matrix);
+
+        if (creatingCache) {
+          opacity = 1;
+        } else {
+          opacity = this._opacity * (parent && parent._renderer ? parent._renderer.opacity : 1);
+        }
+
+        this._renderer.opacity = opacity;
+
+        if (!defaultMatrix && !creatingCache) {
           ctx.save();
           ctx.transform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
         }
-
 
         for (i = 0; i < this.children.length; i++) {
           child = this.children[i];
           canvas[child._renderer.type].render.call(child, ctx);
         }
 
-        if (!defaultMatrix) {
+        if (!defaultMatrix && !creatingCache) {
           ctx.restore();
         }
 
-        return this.flagReset();
+        if (creatingCache) {
+          return canvas.group.renderCached.call(this, oldCtx);
+        } else {
+          return this.flagReset();
+        }
 
+      },
+
+      renderCached: function (ctx) {
+        var ratio = Two.Instances[0].renderer.ratio;
+        var isOne = ratio === 1;
+        var matrix = this._matrix.elements;
+        var parent = this.parent;
+
+        var r = {
+          left: this.cachedRect.left + matrix[2],
+          top:  this.cachedRect.top + matrix[5],
+          width: this.cachedRect.width,
+          height: this.cachedRect.height
+        };
+
+        if (!intersectsViewport(r)) {
+          return;
+        }
+
+
+        ctx.globalAlpha = this._opacity * (parent && parent._renderer ? parent._renderer.opacity : 1);
+
+
+        ctx.drawImage(this.cachedBitmap, 0, 0, r.width * ratio, r.height * ratio, r.left, r.top, r.width, r.height);
+
+
+
+        return this.flagReset();
       }
 
     },
@@ -63,12 +169,18 @@
         // TODO: Add a check here to only invoke _update if need be.
         this._update();
 
+
+        opacity = this._opacity * this.parent._renderer.opacity;
+        visible = this._visible;
+
+        if (!visible || !opacity) {
+          return this;
+        }
+
         matrix = this._matrix.elements;
         stroke = this._stroke;
         linewidth = this._linewidth;
         fill = this._fill;
-        opacity = this._opacity * this.parent._renderer.opacity;
-        visible = this._visible;
         cap = this._cap;
         join = this._join;
         miter = this._miter;
@@ -78,9 +190,6 @@
         last = length - 1;
         defaultMatrix = isDefaultMatrix(matrix);
 
-        if (!visible || !opacity) {
-          return this;
-        }
 
         // Transform
         if (!defaultMatrix) {
