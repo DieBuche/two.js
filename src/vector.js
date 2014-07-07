@@ -1,4 +1,5 @@
 (function(Two) {
+  "use strict";
 
   var Vector = Two.Vector = function(x, y) {
 
