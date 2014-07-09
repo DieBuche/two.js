@@ -149,16 +149,20 @@
 
   _.extend(Anchor.prototype, Two.Vector.prototype, AnchorProto);
 
+  // _.extend doesn't copy all properties properly
+  var xgs = Object.getOwnPropertyDescriptor(Two.Vector.prototype, 'x');
+  var ygs = Object.getOwnPropertyDescriptor(Two.Vector.prototype, 'y');
+  Object.defineProperty(Anchor.prototype, 'x', xgs);
+  Object.defineProperty(Anchor.prototype, 'y', ygs);
+
   // Make it possible to bind and still have the Anchor specific
   // inheritance from Two.Vector
   Two.Anchor.prototype.bind = Two.Anchor.prototype.on = function() {
     Two.Vector.prototype.bind.apply(this, arguments);
-    _.extend(this, AnchorProto);
   };
 
   Two.Anchor.prototype.unbind = Two.Anchor.prototype.off = function() {
     Two.Vector.prototype.unbind.apply(this, arguments);
-    _.extend(this, AnchorProto);
   };
 
 })(Two);
