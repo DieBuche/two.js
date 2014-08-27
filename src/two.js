@@ -1606,14 +1606,13 @@
       var h2 = height / 2;
 
       var points = [
-        new Two.Anchor(-w2, -h2),
-        new Two.Anchor(w2, -h2),
-        new Two.Anchor(w2, h2),
-        new Two.Anchor(-w2, h2)
+        new Two.Anchor(x, y),
+        new Two.Anchor(x+width, y),
+        new Two.Anchor(x+width, y+height),
+        new Two.Anchor(x, y+height)
       ];
 
       var rect = new Two.Polygon(points, true);
-      rect.translation.set(x, y);
 
       this.scene.add(rect);
       return rect;
