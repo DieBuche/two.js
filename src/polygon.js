@@ -78,7 +78,7 @@
 
       // Only the first 8 properties are flagged like this. The subsequent
       // properties behave differently and need to be hand written.
-      _.each(Polygon.Properties.slice(0, 8), function(property) {
+      Polygon.Properties.slice(0, 8).forEach(function(property) {
 
         var secret = '_' + property;
         var flag = '_flag' + property.charAt(0).toUpperCase() + property.slice(1);

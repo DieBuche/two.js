@@ -97,7 +97,7 @@
     MakeObservable: function(object) {
 
       var properties = Two.Polygon.Properties.slice(0);
-      var oi = _.indexOf(properties, 'opacity');
+      var oi = properties.indexOf('opacity');
 
       if (oi >= 0) {
 
@@ -209,7 +209,7 @@
       var group = new Group();
       parent.add(group);
 
-      var children = _.map(this.children, function(child) {
+      var children = this.children.map(function(child) {
         return child.clone(group);
       });
 
@@ -230,7 +230,7 @@
         scale: this.scale
       };
 
-      _.each(this.children, function(child, i) {
+      this.children.forEach(function(child, i) {
         result.children[i] = child.toObject();
       }, this);
 

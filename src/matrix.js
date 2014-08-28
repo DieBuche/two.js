@@ -128,15 +128,15 @@
      */
     multiply: function(a, b, c, d, e, f, g, h, i) {
 
-      var elements = arguments, l = elements.length;
+      var args = arguments, l = args.length, elements = this.elements;
 
       // Multiply scalar
 
       if (l <= 1) {
 
-        _.each(this.elements, function(v, i) {
-          this.elements[i] = v * a;
-        }, this);
+        this.elements = elements.map(function(v){
+          return v * a;
+        });
 
         return this.trigger(Two.Events.change);
 
@@ -148,7 +148,7 @@
         a = a || 0;
         b = b || 0;
         c = c || 0;
-        e = this.elements;
+        e = elements;
 
         // Go down rows first
         // a, d, g, b, e, h, c, f, i
@@ -163,8 +163,8 @@
 
       // Multiple matrix
 
-      var A = this.elements;
-      var B = elements;
+      var A = elements;
+      var B = args;
 
       var A0 = A[0], A1 = A[1], A2 = A[2];
       var A3 = A[3], A4 = A[4], A5 = A[5];
@@ -174,17 +174,17 @@
       var B3 = B[3], B4 = B[4], B5 = B[5];
       var B6 = B[6], B7 = B[7], B8 = B[8];
 
-      this.elements[0] = A0 * B0 + A1 * B3 + A2 * B6;
-      this.elements[1] = A0 * B1 + A1 * B4 + A2 * B7;
-      this.elements[2] = A0 * B2 + A1 * B5 + A2 * B8;
+      elements[0] = A0 * B0 + A1 * B3 + A2 * B6;
+      elements[1] = A0 * B1 + A1 * B4 + A2 * B7;
+      elements[2] = A0 * B2 + A1 * B5 + A2 * B8;
 
-      this.elements[3] = A3 * B0 + A4 * B3 + A5 * B6;
-      this.elements[4] = A3 * B1 + A4 * B4 + A5 * B7;
-      this.elements[5] = A3 * B2 + A4 * B5 + A5 * B8;
+      elements[3] = A3 * B0 + A4 * B3 + A5 * B6;
+      elements[4] = A3 * B1 + A4 * B4 + A5 * B7;
+      elements[5] = A3 * B2 + A4 * B5 + A5 * B8;
 
-      this.elements[6] = A6 * B0 + A7 * B3 + A8 * B6;
-      this.elements[7] = A6 * B1 + A7 * B4 + A8 * B7;
-      this.elements[8] = A6 * B2 + A7 * B5 + A8 * B8;
+      elements[6] = A6 * B0 + A7 * B3 + A8 * B6;
+      elements[7] = A6 * B1 + A7 * B4 + A8 * B7;
+      elements[8] = A6 * B2 + A7 * B5 + A8 * B8;
 
       return this.trigger(Two.Events.change);
 
