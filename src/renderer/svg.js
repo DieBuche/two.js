@@ -189,8 +189,6 @@
 
     group: {
 
-      // TODO: Can speed up.
-      // TODO: How does this effect a f
       appendChild: function(object) {
 
         var elem = object._renderer.elem;
@@ -236,6 +234,24 @@
         this.elem.removeChild(elem);
 
       },
+
+      reorderChildren: function () {
+
+        // Remove all child nodes
+        // This step is theoretically not needed
+        // if appendChild and removeChild is correctly
+        // triggered beforehand.
+        while( this.elem.hasChildNodes() ){
+          this.elem.removeChild(this.elem.lastChild);
+        }
+
+        // Now readd the elements in the correct order
+        this.children.forEach(function (child, i) {
+          this.elem.appendChild(child.elem);
+        }, this);
+
+      },
+
 
       renderChild: function(child) {
         svg[child._renderer.type].render.call(child, this);
