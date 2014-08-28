@@ -81,7 +81,7 @@ module.exports = function(grunt) {
     closureCompiler:  {
 
       options: {
-        compilerFile: 'third-party/google_closure_compiler-r2388.jar',
+        compilerFile: 'node_modules/closure-compiler/lib/vendor/compiler.jar',
 
         // set to true if you want to check if files were modified
         // before starting compilation (can save some time in large sourcebases)
@@ -89,7 +89,7 @@ module.exports = function(grunt) {
 
         // Set Closure Compiler Directives here
         compilerOpts: {
-           language_in: 'ECMASCRIPT3'
+           language_in: 'ECMASCRIPT5'
         }
       },
 
