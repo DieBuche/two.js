@@ -10,7 +10,7 @@ module.exports = function(grunt) {
       licenseFile : 'license.txt',
 
       depFiles : [
-        'node_modules/underscore/underscore.js',
+        'third-party/lodash.custom.js',
         'third-party/requestAnimationFrame.js'
       ],
 
@@ -89,7 +89,7 @@ module.exports = function(grunt) {
 
         // Set Closure Compiler Directives here
         compilerOpts: {
-           language_in: 'ECMASCRIPT5'
+           language_in: 'ECMASCRIPT3'
         }
       },
 
